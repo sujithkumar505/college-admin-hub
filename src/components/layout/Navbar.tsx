@@ -8,7 +8,7 @@ export const Navbar = () => {
   const [notifCount] = useState(3);
 
   return (
-    <header className="h-16 glass border-b border-white/10 flex items-center justify-between px-6 sticky top-0 z-30">
+    <header className="h-16 bg-card border-b border-border flex items-center justify-between px-6 sticky top-0 z-30 shadow-sm">
       {/* Left: College name */}
       <div>
         <h2 className="text-lg font-semibold gradient-text-primary">{collegeName || "College Admin"}</h2>
@@ -17,7 +17,7 @@ export const Navbar = () => {
       {/* Right: Search, Notifications, Profile */}
       <div className="flex items-center gap-4">
         {/* Search */}
-        <div className="hidden md:flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-muted-foreground focus-within:border-primary/50 transition-colors">
+        <div className="hidden md:flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary border border-border text-muted-foreground focus-within:border-primary/50 transition-colors">
           <Search className="w-4 h-4" />
           <input
             type="text"
@@ -30,7 +30,7 @@ export const Navbar = () => {
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="relative p-2 rounded-lg hover:bg-white/10 transition-colors text-muted-foreground hover:text-foreground"
+          className="relative p-2 rounded-lg hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
         >
           <Bell className="w-5 h-5" />
           {notifCount > 0 && (
@@ -42,7 +42,7 @@ export const Navbar = () => {
 
         {/* Profile */}
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">
+          <div className="w-9 h-9 rounded-full flex items-center justify-center text-white font-semibold text-sm" style={{ background: 'linear-gradient(135deg, hsl(214,100%,40%), hsl(141,68%,45%))' }}>
             {adminName.charAt(0)}
           </div>
           <div className="hidden sm:block">

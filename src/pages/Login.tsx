@@ -6,11 +6,11 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const FloatingOrbs = () => (
   <div className="fixed inset-0 overflow-hidden pointer-events-none">
-    <div className="orb w-72 h-72 bg-indigo-600 top-[10%] left-[10%]" style={{ animationDelay: "0s" }} />
-    <div className="orb w-96 h-96 bg-purple-600 top-[60%] right-[5%]" style={{ animationDelay: "2s" }} />
-    <div className="orb w-48 h-48 bg-pink-600 bottom-[20%] left-[30%]" style={{ animationDelay: "4s" }} />
-    <div className="orb w-64 h-64 bg-indigo-500 top-[30%] right-[25%]" style={{ animationDelay: "1s" }} />
-    <div className="orb w-40 h-40 bg-violet-600 bottom-[10%] right-[40%]" style={{ animationDelay: "3s" }} />
+    <div className="orb w-72 h-72 top-[10%] left-[10%]" style={{ backgroundColor: 'hsl(214,100%,60%)' }} />
+    <div className="orb w-96 h-96 top-[60%] right-[5%]" style={{ backgroundColor: 'hsl(141,68%,55%)' }} />
+    <div className="orb w-48 h-48 bottom-[20%] left-[30%]" style={{ backgroundColor: 'hsl(179,100%,50%)' }} />
+    <div className="orb w-64 h-64 top-[30%] right-[25%]" style={{ backgroundColor: 'hsl(247,75%,64%)' }} />
+    <div className="orb w-40 h-40 bottom-[10%] right-[40%]" style={{ backgroundColor: 'hsl(51,100%,50%)' }} />
   </div>
 );
 
@@ -37,7 +37,6 @@ const Login = () => {
     }
     setLoading(true);
     setError("");
-    // Simulate API call
     await new Promise((r) => setTimeout(r, 1200));
     setVerifiedCollege("National Institute of Technology");
     setLoading(false);
@@ -63,14 +62,14 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden" style={{ background: 'linear-gradient(135deg, hsl(214,40%,96%), hsl(210,20%,98%), hsl(141,30%,96%))' }}>
       <FloatingOrbs />
 
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className={`w-full max-w-md mx-4 glass-card relative z-10 ${shakeError ? "animate-shake" : ""}`}
+        className={`w-full max-w-md mx-4 bg-card/90 backdrop-blur-xl rounded-2xl p-8 border border-border shadow-xl relative z-10 ${shakeError ? "animate-shake" : ""}`}
       >
         <AnimatePresence mode="wait">
           {step === 1 ? (
@@ -82,12 +81,12 @@ const Login = () => {
               transition={{ duration: 0.3 }}
               className="space-y-6"
             >
-              {/* Shield Icon */}
               <div className="flex justify-center">
                 <motion.div
                   animate={{ scale: [1, 1.1, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
-                  className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/25"
+                  className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg"
+                  style={{ background: 'linear-gradient(135deg, hsl(214,100%,40%), hsl(141,68%,45%))', boxShadow: '0 8px 25px hsla(214,100%,40%,0.3)' }}
                 >
                   <Shield className="w-8 h-8 text-white" />
                 </motion.div>
@@ -105,7 +104,7 @@ const Login = () => {
                   value={collegeCode}
                   onChange={(e) => setCollegeCode(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleVerify()}
-                  className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all"
+                  className="w-full px-4 py-3 rounded-lg bg-secondary border border-border text-foreground placeholder:text-muted-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
                 />
               </div>
 
@@ -116,11 +115,7 @@ const Login = () => {
                 disabled={loading}
                 className="w-full py-3 gradient-btn flex items-center justify-center gap-2 disabled:opacity-50"
               >
-                {loading ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  <>Verify</>
-                )}
+                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <>Verify</>}
               </button>
             </motion.div>
           ) : (
@@ -131,7 +126,6 @@ const Login = () => {
               transition={{ duration: 0.3 }}
               className="space-y-6"
             >
-              {/* Verified badge */}
               <div className="flex justify-center">
                 <motion.div
                   initial={{ scale: 0 }}
@@ -146,7 +140,7 @@ const Login = () => {
 
               <div className="text-center">
                 <div className="flex justify-center mb-3">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, hsl(214,100%,40%), hsl(141,68%,45%))' }}>
                     <Lock className="w-6 h-6 text-white" />
                   </div>
                 </div>
@@ -162,7 +156,7 @@ const Login = () => {
                     placeholder="Email address"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 rounded-lg bg-white/5 border border-white/10 text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all"
+                    className="w-full pl-10 pr-4 py-3 rounded-lg bg-secondary border border-border text-foreground placeholder:text-muted-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
                   />
                 </div>
 
@@ -174,7 +168,7 @@ const Login = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-                    className="w-full pl-10 pr-12 py-3 rounded-lg bg-white/5 border border-white/10 text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25 transition-all"
+                    className="w-full pl-10 pr-12 py-3 rounded-lg bg-secondary border border-border text-foreground placeholder:text-muted-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
                   />
                   <button
                     onClick={() => setShowPassword(!showPassword)}
@@ -192,11 +186,7 @@ const Login = () => {
                 disabled={loading}
                 className="w-full py-3 gradient-btn shimmer flex items-center justify-center gap-2 disabled:opacity-50"
               >
-                {loading ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  <>Sign In</>
-                )}
+                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <>Sign In</>}
               </button>
 
               <button

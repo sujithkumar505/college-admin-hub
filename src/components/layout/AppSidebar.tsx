@@ -32,10 +32,10 @@ export const AppSidebar = () => {
     <motion.aside
       animate={{ width: collapsed ? 80 : 260 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
-      className="fixed left-0 top-0 h-screen z-40 glass flex flex-col border-r border-white/10"
+      className="fixed left-0 top-0 h-screen z-40 flex flex-col border-r bg-sidebar text-sidebar-foreground border-sidebar-border"
     >
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-white/10">
+      <div className="flex items-center justify-between p-4 border-b border-sidebar-border">
         <AnimatePresence>
           {!collapsed && (
             <motion.div
@@ -44,16 +44,16 @@ export const AppSidebar = () => {
               exit={{ opacity: 0 }}
               className="flex items-center gap-2"
             >
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, hsl(214,100%,50%), hsl(141,68%,50%))' }}>
                 <GraduationCap className="w-5 h-5 text-white" />
               </div>
-              <span className="font-bold gradient-text text-lg">EduAdmin</span>
+              <span className="font-bold text-lg text-white">EduAdmin</span>
             </motion.div>
           )}
         </AnimatePresence>
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="p-2 rounded-lg hover:bg-white/10 transition-colors text-muted-foreground hover:text-foreground"
+          className="p-2 rounded-lg hover:bg-sidebar-accent transition-colors text-sidebar-foreground hover:text-sidebar-accent-foreground"
         >
           {collapsed ? <Menu className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
         </button>
@@ -70,7 +70,7 @@ export const AppSidebar = () => {
                 whileTap={{ scale: 0.98 }}
                 className={`menu-item ${isActive ? "active" : ""}`}
               >
-                <item.icon className={`w-5 h-5 flex-shrink-0 ${isActive ? "text-primary" : ""}`} />
+                <item.icon className={`w-5 h-5 flex-shrink-0 ${isActive ? "text-sidebar-primary" : ""}`} />
                 <AnimatePresence>
                   {!collapsed && (
                     <motion.span
@@ -90,7 +90,7 @@ export const AppSidebar = () => {
       </nav>
 
       {/* Logout */}
-      <div className="p-3 border-t border-white/10">
+      <div className="p-3 border-t border-sidebar-border">
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}

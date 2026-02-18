@@ -19,14 +19,12 @@ import {
   Pie,
   Cell,
   ResponsiveContainer,
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
   Tooltip,
   Area,
   AreaChart,
   CartesianGrid,
+  XAxis,
+  YAxis,
 } from "recharts";
 
 // Animated counter hook
@@ -34,7 +32,6 @@ const useCountUp = (end: number, duration = 1500) => {
   const [count, setCount] = useState(0);
   const ref = useRef<number>();
   useEffect(() => {
-    let start = 0;
     const startTime = Date.now();
     const tick = () => {
       const elapsed = Date.now() - startTime;
@@ -50,16 +47,16 @@ const useCountUp = (end: number, duration = 1500) => {
 };
 
 const statCards = [
-  { title: "Scholarships", value: 24, icon: GraduationCap, trend: "+12%", up: true, gradient: "from-indigo-500 to-purple-600" },
-  { title: "Applications", value: 1847, icon: FileText, trend: "+23%", up: true, gradient: "from-emerald-500 to-teal-600" },
-  { title: "Budget (₹)", value: 52, suffix: "L", icon: DollarSign, trend: "-5%", up: false, gradient: "from-amber-500 to-orange-600" },
-  { title: "Students", value: 3256, icon: Users, trend: "+8%", up: true, gradient: "from-pink-500 to-rose-600" },
+  { title: "Scholarships", value: 24, icon: GraduationCap, trend: "+12%", up: true, gradient: "linear-gradient(135deg, hsl(214,100%,40%), hsl(179,100%,40%))" },
+  { title: "Applications", value: 1847, icon: FileText, trend: "+23%", up: true, gradient: "linear-gradient(135deg, hsl(141,68%,40%), hsl(179,100%,35%))" },
+  { title: "Budget (₹)", value: 52, suffix: "L", icon: DollarSign, trend: "-5%", up: false, gradient: "linear-gradient(135deg, hsl(51,100%,50%), hsl(33,100%,50%))" },
+  { title: "Students", value: 3256, icon: Users, trend: "+8%", up: true, gradient: "linear-gradient(135deg, hsl(247,75%,64%), hsl(179,100%,40%))" },
 ];
 
 const pieData = [
-  { name: "Approved", value: 45, color: "#10b981" },
-  { name: "Pending", value: 30, color: "#f59e0b" },
-  { name: "Rejected", value: 25, color: "#ef4444" },
+  { name: "Approved", value: 45, color: "hsl(141, 68%, 45%)" },
+  { name: "Pending", value: 30, color: "hsl(51, 100%, 50%)" },
+  { name: "Rejected", value: 25, color: "hsl(0, 84%, 60%)" },
 ];
 
 const lineData = [
@@ -72,11 +69,11 @@ const lineData = [
 ];
 
 const recentActivity = [
-  { text: "New scholarship 'Merit Award 2024' created", time: "2 hours ago", icon: PlusCircle, color: "text-indigo-400" },
-  { text: "12 applications approved for 'Sports Excellence'", time: "4 hours ago", icon: ClipboardCheck, color: "text-emerald-400" },
-  { text: "AI allocation completed for 'Need-Based Fund'", time: "6 hours ago", icon: Brain, color: "text-purple-400" },
-  { text: "Budget updated for Q2 scholarships", time: "1 day ago", icon: DollarSign, color: "text-amber-400" },
-  { text: "3 new student registrations", time: "1 day ago", icon: Users, color: "text-pink-400" },
+  { text: "New scholarship 'Merit Award 2024' created", time: "2 hours ago", icon: PlusCircle, color: "text-blue-600" },
+  { text: "12 applications approved for 'Sports Excellence'", time: "4 hours ago", icon: ClipboardCheck, color: "text-emerald-600" },
+  { text: "AI allocation completed for 'Need-Based Fund'", time: "6 hours ago", icon: Brain, color: "text-violet-600" },
+  { text: "Budget updated for Q2 scholarships", time: "1 day ago", icon: DollarSign, color: "text-amber-600" },
+  { text: "3 new student registrations", time: "1 day ago", icon: Users, color: "text-cyan-600" },
 ];
 
 const StatCard = ({ stat, index }: { stat: typeof statCards[0]; index: number }) => {
@@ -95,11 +92,11 @@ const StatCard = ({ stat, index }: { stat: typeof statCards[0]; index: number })
             {stat.title === "Budget (₹)" ? "₹" : ""}{count.toLocaleString()}{stat.suffix || ""}
           </p>
         </div>
-        <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.gradient} flex items-center justify-center shadow-lg`}>
+        <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg" style={{ background: stat.gradient }}>
           <stat.icon className="w-6 h-6 text-white" />
         </div>
       </div>
-      <div className={`flex items-center gap-1 mt-3 text-sm ${stat.up ? "text-emerald-400" : "text-red-400"}`}>
+      <div className={`flex items-center gap-1 mt-3 text-sm ${stat.up ? "text-emerald-600" : "text-red-500"}`}>
         {stat.up ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
         <span className="font-medium">{stat.trend}</span>
         <span className="text-muted-foreground">vs last month</span>
@@ -111,7 +108,7 @@ const StatCard = ({ stat, index }: { stat: typeof statCards[0]; index: number })
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null;
   return (
-    <div className="glass-card !p-3 text-sm">
+    <div className="bg-card rounded-lg p-3 text-sm border border-border shadow-lg">
       <p className="text-muted-foreground">{label}</p>
       <p className="text-foreground font-semibold">{payload[0].value} applications</p>
     </div>
@@ -137,7 +134,8 @@ const Dashboard = () => {
           initial={{ width: 0 }}
           animate={{ width: "6rem" }}
           transition={{ delay: 0.5, duration: 0.8 }}
-          className="h-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full"
+          className="h-0.5 rounded-full"
+          style={{ background: 'linear-gradient(90deg, hsl(214,100%,40%), hsl(141,68%,45%))' }}
         />
       </motion.div>
 
@@ -192,15 +190,15 @@ const Dashboard = () => {
             <AreaChart data={lineData}>
               <defs>
                 <linearGradient id="colorApps" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                  <stop offset="5%" stopColor="hsl(214,100%,40%)" stopOpacity={0.25} />
+                  <stop offset="95%" stopColor="hsl(141,68%,45%)" stopOpacity={0.05} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-              <XAxis dataKey="month" stroke="#64748b" fontSize={12} />
-              <YAxis stroke="#64748b" fontSize={12} />
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(214,20%,90%)" />
+              <XAxis dataKey="month" stroke="hsl(215,14%,45%)" fontSize={12} />
+              <YAxis stroke="hsl(215,14%,45%)" fontSize={12} />
               <Tooltip content={<CustomTooltip />} />
-              <Area type="monotone" dataKey="apps" stroke="#6366f1" fill="url(#colorApps)" strokeWidth={2} />
+              <Area type="monotone" dataKey="apps" stroke="hsl(214,100%,40%)" fill="url(#colorApps)" strokeWidth={2} />
             </AreaChart>
           </ResponsiveContainer>
         </motion.div>
@@ -223,7 +221,7 @@ const Dashboard = () => {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.7 + i * 0.1 }}
-                className="flex items-start gap-3 p-3 rounded-lg hover:bg-white/5 transition-colors"
+                className="flex items-start gap-3 p-3 rounded-lg hover:bg-secondary/50 transition-colors"
               >
                 <div className={`mt-0.5 ${item.color}`}>
                   <item.icon className="w-5 h-5" />
@@ -249,7 +247,7 @@ const Dashboard = () => {
               <ClipboardCheck className="w-5 h-5" />
               Review Applications
             </motion.button>
-            <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="w-full py-3 px-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium rounded-lg transition-all duration-300 hover:from-purple-500 hover:to-pink-500 hover:shadow-lg hover:shadow-purple-500/25 hover:-translate-y-0.5 flex items-center gap-3">
+            <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="w-full py-3 px-4 gradient-btn-tech flex items-center gap-3">
               <Brain className="w-5 h-5" />
               Run AI Allocation
             </motion.button>

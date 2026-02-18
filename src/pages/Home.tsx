@@ -7,13 +7,13 @@ const Home = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
+    <div className="min-h-screen relative overflow-hidden">
       {/* Hero Section */}
       <div className="relative min-h-screen flex flex-col">
         {/* Background Image with Overlay */}
         <div className="absolute inset-0">
           <img src={heroImage} alt="Classroom" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[hsl(214,100%,20%)]/80 via-[hsl(214,100%,20%)]/60 to-[hsl(214,100%,20%)]/90" />
         </div>
 
         {/* Navbar */}
@@ -24,7 +24,7 @@ const Home = () => {
           className="relative z-10 flex items-center justify-between px-6 md:px-12 py-5"
         >
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/25">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg" style={{ background: 'linear-gradient(135deg, hsl(214,100%,40%), hsl(141,68%,45%))' }}>
               <GraduationCap className="w-6 h-6 text-white" />
             </div>
             <span className="text-xl font-bold text-white">ScholarConnect</span>
@@ -35,7 +35,7 @@ const Home = () => {
             </a>
             <button
               onClick={() => navigate("/login")}
-              className="px-5 py-2 rounded-lg bg-white text-black font-medium text-sm hover:bg-white/90 transition-colors"
+              className="px-5 py-2 rounded-lg font-medium text-sm text-white transition-all hover:shadow-lg" style={{ background: 'linear-gradient(135deg, hsl(51,100%,50%), hsl(33,100%,50%))' }}
             >
               Admin Login
             </button>
@@ -52,7 +52,7 @@ const Home = () => {
           >
             ScholarConnect
             <br />
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-300 via-purple-300 to-pink-300">
+            <span className="bg-clip-text text-transparent" style={{ backgroundImage: 'linear-gradient(135deg, hsl(179,100%,60%), hsl(141,68%,65%), hsl(51,100%,70%))' }}>
               Scholarships
             </span>
           </motion.h1>
@@ -74,7 +74,8 @@ const Home = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => navigate("/login")}
-            className="mt-10 px-10 py-4 rounded-full bg-white text-black font-semibold text-lg flex items-center gap-3 shadow-2xl shadow-white/10 hover:shadow-white/20 transition-all"
+            className="mt-10 px-10 py-4 rounded-full font-semibold text-lg flex items-center gap-3 shadow-2xl transition-all text-white"
+            style={{ background: 'linear-gradient(135deg, hsl(214,100%,40%), hsl(141,68%,45%))', boxShadow: '0 8px 30px hsla(214,100%,40%,0.35)' }}
           >
             Let's Go <ArrowRight className="w-5 h-5" />
           </motion.button>
@@ -118,9 +119,9 @@ const Home = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.15 }}
-              className="glass-card text-center hover:bg-white/[0.08] transition-all duration-300"
+              className="glass-card text-center hover:shadow-lg hover:border-primary/20 transition-all duration-300"
             >
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-indigo-500/20">
+              <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg" style={{ background: 'linear-gradient(135deg, hsl(214,100%,40%), hsl(141,68%,45%))' }}>
                 <feature.icon className="w-7 h-7 text-white" />
               </div>
               <h3 className="text-lg font-semibold text-foreground mb-2">{feature.title}</h3>
@@ -134,7 +135,7 @@ const Home = () => {
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
             onClick={() => navigate("/login")}
-            className="gradient-btn px-8 py-3 text-lg"
+            className="gradient-btn-cta px-8 py-3 text-lg"
           >
             Get Started →
           </motion.button>
