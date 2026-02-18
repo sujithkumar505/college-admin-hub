@@ -25,11 +25,11 @@ const mockApps: Application[] = [
 const AIScoreCircle = ({ score }: { score: number }) => {
   const circumference = 2 * Math.PI * 18;
   const offset = circumference - (score / 100) * circumference;
-  const color = score >= 80 ? "#10b981" : score >= 60 ? "#f59e0b" : "#ef4444";
+  const color = score >= 80 ? "hsl(141,68%,45%)" : score >= 60 ? "hsl(51,100%,50%)" : "hsl(0,84%,60%)";
   return (
     <div className="relative w-12 h-12">
       <svg className="w-12 h-12 -rotate-90" viewBox="0 0 40 40">
-        <circle cx="20" cy="20" r="18" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="3" />
+        <circle cx="20" cy="20" r="18" fill="none" stroke="hsl(214,20%,92%)" strokeWidth="3" />
         <circle cx="20" cy="20" r="18" fill="none" stroke={color} strokeWidth="3" strokeDasharray={circumference} strokeDashoffset={offset} strokeLinecap="round" className="transition-all duration-1000" />
       </svg>
       <span className="absolute inset-0 flex items-center justify-center text-xs font-bold font-mono text-foreground">{score}</span>
@@ -56,13 +56,13 @@ const Applications = () => {
 
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
-        <div className="flex-1 flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white/5 border border-white/10 focus-within:border-primary/50 transition-colors">
+        <div className="flex-1 flex items-center gap-2 px-4 py-2.5 rounded-lg bg-secondary border border-border focus-within:border-primary/50 transition-colors">
           <Search className="w-4 h-4 text-muted-foreground" />
           <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search students..." className="bg-transparent text-sm outline-none flex-1 text-foreground placeholder:text-muted-foreground" />
         </div>
         <div className="flex gap-2">
           {["All", "Pending", "Approved", "Rejected"].map((s) => (
-            <button key={s} onClick={() => setStatusFilter(s)} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${statusFilter === s ? "bg-primary/20 text-primary border border-primary/30" : "bg-white/5 border border-white/10 text-muted-foreground hover:text-foreground hover:bg-white/10"}`}>
+            <button key={s} onClick={() => setStatusFilter(s)} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${statusFilter === s ? "bg-primary/10 text-primary border border-primary/30" : "bg-secondary border border-border text-muted-foreground hover:text-foreground hover:bg-muted"}`}>
               {s}
             </button>
           ))}
@@ -88,12 +88,12 @@ const Applications = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.05 }}
-            className="glass-card hover:bg-white/[0.08] transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+            className="glass-card hover:shadow-lg hover:border-primary/20 transition-all duration-300 hover:-translate-y-1"
           >
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-3">
                 <input type="checkbox" checked={selected.includes(app.id)} onChange={() => toggleSelect(app.id)} className="accent-primary w-4 h-4" />
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold text-sm" style={{ background: 'linear-gradient(135deg, hsl(214,100%,40%), hsl(141,68%,45%))' }}>
                   {app.name.split(" ").map(n => n[0]).join("")}
                 </div>
                 <div>
@@ -105,15 +105,15 @@ const Applications = () => {
             </div>
 
             <div className="grid grid-cols-3 gap-3 mb-4">
-              <div className="text-center p-2 rounded-lg bg-white/5">
+              <div className="text-center p-2 rounded-lg bg-secondary">
                 <p className="text-xs text-muted-foreground">CGPA</p>
-                <p className={`text-lg font-bold font-mono ${app.cgpa >= 8 ? "text-emerald-400" : app.cgpa >= 6 ? "text-amber-400" : "text-red-400"}`}>{app.cgpa}</p>
+                <p className={`text-lg font-bold font-mono ${app.cgpa >= 8 ? "text-emerald-600" : app.cgpa >= 6 ? "text-amber-600" : "text-red-500"}`}>{app.cgpa}</p>
               </div>
-              <div className="text-center p-2 rounded-lg bg-white/5">
+              <div className="text-center p-2 rounded-lg bg-secondary">
                 <p className="text-xs text-muted-foreground">Income</p>
                 <p className="text-sm font-semibold text-foreground font-mono">₹{(app.income / 100000).toFixed(1)}L</p>
               </div>
-              <div className="flex flex-col items-center p-2 rounded-lg bg-white/5">
+              <div className="flex flex-col items-center p-2 rounded-lg bg-secondary">
                 <p className="text-xs text-muted-foreground mb-1">AI Score</p>
                 <AIScoreCircle score={app.aiScore} />
               </div>
@@ -122,11 +122,11 @@ const Applications = () => {
             <p className="text-xs text-muted-foreground mb-3">Applied for: <span className="text-foreground">{app.scholarship}</span></p>
 
             <div className="flex gap-2">
-              <button className="flex-1 py-2 text-sm rounded-lg bg-white/5 border border-white/10 text-foreground hover:bg-white/10 transition-colors flex items-center justify-center gap-1"><Eye className="w-3 h-3" /> View</button>
+              <button className="flex-1 py-2 text-sm rounded-lg bg-secondary border border-border text-foreground hover:bg-muted transition-colors flex items-center justify-center gap-1"><Eye className="w-3 h-3" /> View</button>
               {app.status === "Pending" && (
                 <>
-                  <button className="py-2 px-3 text-sm rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20 transition-colors"><CheckCircle className="w-4 h-4" /></button>
-                  <button className="py-2 px-3 text-sm rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-colors"><XCircle className="w-4 h-4" /></button>
+                  <button className="py-2 px-3 text-sm rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100 transition-colors"><CheckCircle className="w-4 h-4" /></button>
+                  <button className="py-2 px-3 text-sm rounded-lg bg-red-50 border border-red-200 text-red-700 hover:bg-red-100 transition-colors"><XCircle className="w-4 h-4" /></button>
                 </>
               )}
             </div>

@@ -15,30 +15,30 @@ const medals: Record<number, string> = { 1: "🥇", 2: "🥈", 3: "🥉" };
 const BreakdownModal = ({ data, onClose }: { data: typeof mockResults[0] | null; onClose: () => void }) => {
   if (!data) return null;
   const items = [
-    { label: "Academic", value: data.breakdown.academic, max: 40, color: "bg-indigo-500" },
+    { label: "Academic", value: data.breakdown.academic, max: 40, color: "bg-blue-500" },
     { label: "Financial Need", value: data.breakdown.financial, max: 30, color: "bg-emerald-500" },
     { label: "Extracurricular", value: data.breakdown.extra, max: 20, color: "bg-amber-500" },
-    { label: "Essay", value: data.breakdown.essay, max: 10, color: "bg-pink-500" },
+    { label: "Essay", value: data.breakdown.essay, max: 10, color: "bg-violet-500" },
   ];
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={onClose}>
-      <motion.div initial={{ y: 40, scale: 0.95 }} animate={{ y: 0, scale: 1 }} className="glass-card w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={onClose}>
+      <motion.div initial={{ y: 40, scale: 0.95 }} animate={{ y: 0, scale: 1 }} className="bg-card rounded-2xl p-6 border border-border shadow-xl w-full max-w-md" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-bold gradient-text">AI Score Breakdown</h3>
-          <button onClick={onClose} className="p-2 rounded-lg hover:bg-white/10 text-muted-foreground"><X className="w-5 h-5" /></button>
+          <button onClick={onClose} className="p-2 rounded-lg hover:bg-secondary text-muted-foreground"><X className="w-5 h-5" /></button>
         </div>
         <p className="text-foreground font-medium mb-4">{data.name} — <span className="font-mono">{data.rollNo}</span></p>
         <div className="space-y-4">
           {items.map((item) => (
             <div key={item.label}>
               <div className="flex justify-between text-sm mb-1"><span className="text-muted-foreground">{item.label} (max {item.max})</span><span className="font-mono text-foreground">{item.value}</span></div>
-              <div className="h-2 rounded-full bg-white/5 overflow-hidden">
+              <div className="h-2 rounded-full bg-secondary overflow-hidden">
                 <motion.div initial={{ width: 0 }} animate={{ width: `${(item.value / item.max) * 100}%` }} transition={{ duration: 1, delay: 0.2 }} className={`h-full rounded-full ${item.color}`} />
               </div>
             </div>
           ))}
         </div>
-        <div className="mt-6 pt-4 border-t border-white/10 flex justify-between items-center">
+        <div className="mt-6 pt-4 border-t border-border flex justify-between items-center">
           <span className="text-muted-foreground">Total Score</span>
           <span className="text-2xl font-bold gradient-text font-mono">{data.aiScore}/100</span>
         </div>
@@ -73,7 +73,7 @@ const AiAllocation = () => {
       <div className="glass-card max-w-lg mx-auto text-center">
         <Brain className="w-12 h-12 text-primary mx-auto mb-4" />
         <h2 className="text-lg font-semibold text-foreground mb-2">Select Scholarship</h2>
-        <select className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-foreground outline-none focus:border-primary/50 transition-all mb-4">
+        <select className="w-full px-4 py-3 rounded-lg bg-secondary border border-border text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all mb-4">
           <option>Merit Excellence Award</option>
           <option>Need-Based Financial Aid</option>
           <option>Sports Achievement Fund</option>
@@ -81,20 +81,20 @@ const AiAllocation = () => {
         <p className="text-sm text-muted-foreground mb-6">AI will rank applicants based on academic performance, financial need, extracurriculars, and essay quality.</p>
 
         {!done ? (
-          <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={runAllocation} disabled={running} className="w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-xl transition-all hover:shadow-lg hover:shadow-purple-500/25 disabled:opacity-60 flex items-center justify-center gap-3 text-lg">
+          <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={runAllocation} disabled={running} className="w-full py-4 gradient-btn-tech rounded-xl disabled:opacity-60 flex items-center justify-center gap-3 text-lg">
             {running ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Play className="w-6 h-6" />}
             {running ? `Processing... ${progress}%` : "Run AI Allocation"}
           </motion.button>
         ) : (
-          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="flex items-center justify-center gap-2 text-emerald-400">
+          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="flex items-center justify-center gap-2 text-emerald-600">
             <CheckCircle className="w-6 h-6" />
             <span className="font-semibold">Allocation Complete!</span>
           </motion.div>
         )}
 
         {running && (
-          <div className="mt-4 h-2 rounded-full bg-white/5 overflow-hidden">
-            <motion.div className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full" style={{ width: `${progress}%` }} />
+          <div className="mt-4 h-2 rounded-full bg-secondary overflow-hidden">
+            <motion.div className="h-full rounded-full" style={{ width: `${progress}%`, background: 'linear-gradient(90deg, hsl(247,75%,64%), hsl(179,100%,40%))' }} />
           </div>
         )}
       </div>
@@ -102,12 +102,12 @@ const AiAllocation = () => {
       {/* Results Table */}
       {done && (
         <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="glass-card !p-0 overflow-hidden">
-          <div className="px-6 py-4 border-b border-white/10">
-            <h3 className="text-lg font-semibold text-foreground flex items-center gap-2"><Trophy className="w-5 h-5 text-amber-400" /> Allocation Results</h3>
+          <div className="px-6 py-4 border-b border-border">
+            <h3 className="text-lg font-semibold text-foreground flex items-center gap-2"><Trophy className="w-5 h-5 text-amber-500" /> Allocation Results</h3>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead><tr className="border-b border-white/10">
+              <thead><tr className="border-b border-border bg-secondary/50">
                 <th className="text-left px-6 py-3 text-xs font-semibold text-muted-foreground uppercase">Rank</th>
                 <th className="text-left px-6 py-3 text-xs font-semibold text-muted-foreground uppercase">Name</th>
                 <th className="text-left px-6 py-3 text-xs font-semibold text-muted-foreground uppercase">Roll No</th>
@@ -117,16 +117,16 @@ const AiAllocation = () => {
               </tr></thead>
               <tbody>
                 {mockResults.map((r, i) => (
-                  <motion.tr key={r.rank} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} className={`border-b border-white/5 hover:bg-white/[0.03] ${r.rank <= 3 ? "bg-gradient-to-r from-amber-500/5 to-transparent" : ""}`}>
+                  <motion.tr key={r.rank} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} className={`border-b border-border/50 hover:bg-secondary/30 ${r.rank <= 3 ? "bg-amber-50/50" : ""}`}>
                     <td className="px-6 py-4 text-lg">{medals[r.rank] || <span className="text-sm text-muted-foreground font-mono">{r.rank}</span>}</td>
                     <td className="px-6 py-4 text-sm font-medium text-foreground">{r.name}</td>
                     <td className="px-6 py-4 text-sm text-muted-foreground font-mono">{r.rollNo}</td>
                     <td className="px-6 py-4 text-sm font-mono text-foreground">{r.cgpa}</td>
-                    <td className="px-6 py-4"><button onClick={() => setSelected(r)} className="text-sm font-mono text-primary underline underline-offset-2 hover:text-indigo-300">{r.aiScore}</button></td>
+                    <td className="px-6 py-4"><button onClick={() => setSelected(r)} className="text-sm font-mono text-primary underline underline-offset-2 hover:opacity-70">{r.aiScore}</button></td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <button className="px-3 py-1.5 text-xs rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20">Approve</button>
-                        <button className="px-3 py-1.5 text-xs rounded-lg bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20">Reject</button>
+                        <button className="px-3 py-1.5 text-xs rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100">Approve</button>
+                        <button className="px-3 py-1.5 text-xs rounded-lg bg-red-50 text-red-700 border border-red-200 hover:bg-red-100">Reject</button>
                       </div>
                     </td>
                   </motion.tr>

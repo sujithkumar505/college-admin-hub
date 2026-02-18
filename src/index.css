@@ -6,54 +6,50 @@
 
 @layer base {
   :root {
-    --background: 222 47% 4%;
-    --foreground: 210 40% 96%;
+    --background: 210 20% 98%;
+    --foreground: 0 0% 20%;
 
-    --card: 222 47% 7%;
-    --card-foreground: 210 40% 96%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 20%;
 
-    --popover: 222 47% 7%;
-    --popover-foreground: 210 40% 96%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 20%;
 
-    --primary: 239 84% 67%;
+    --primary: 214 100% 40%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 217 33% 12%;
-    --secondary-foreground: 210 40% 96%;
+    --secondary: 210 20% 94%;
+    --secondary-foreground: 0 0% 20%;
 
-    --muted: 217 33% 14%;
-    --muted-foreground: 215 20% 55%;
+    --muted: 210 15% 93%;
+    --muted-foreground: 215 14% 45%;
 
-    --accent: 270 70% 60%;
+    --accent: 247 75% 64%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 160 84% 39%;
+    --success: 141 68% 45%;
     --success-foreground: 0 0% 100%;
 
-    --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 0%;
+    --warning: 33 100% 50%;
+    --warning-foreground: 0 0% 100%;
 
-    --border: 217 33% 15%;
-    --input: 217 33% 15%;
-    --ring: 239 84% 67%;
+    --border: 214 20% 88%;
+    --input: 214 20% 88%;
+    --ring: 214 100% 40%;
 
     --radius: 0.75rem;
 
-    --glass-bg: 0 0% 100% / 0.05;
-    --glass-border: 0 0% 100% / 0.1;
-    --glass-hover: 0 0% 100% / 0.08;
-
-    --sidebar-background: 222 47% 5%;
-    --sidebar-foreground: 210 40% 80%;
-    --sidebar-primary: 239 84% 67%;
+    --sidebar-background: 214 40% 16%;
+    --sidebar-foreground: 210 20% 80%;
+    --sidebar-primary: 214 100% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 217 33% 12%;
-    --sidebar-accent-foreground: 210 40% 96%;
-    --sidebar-border: 217 33% 12%;
-    --sidebar-ring: 239 84% 67%;
+    --sidebar-accent: 214 30% 22%;
+    --sidebar-accent-foreground: 210 20% 96%;
+    --sidebar-border: 214 30% 22%;
+    --sidebar-ring: 214 100% 50%;
   }
 }
 
@@ -73,43 +69,85 @@
 }
 
 @layer components {
+  /* Glass cards - light theme with subtle shadows */
   .glass {
-    @apply bg-white/5 backdrop-blur-xl border border-white/10 shadow-lg;
+    @apply bg-card/80 backdrop-blur-xl border border-border shadow-sm;
   }
 
   .glass-hover {
-    @apply glass transition-all duration-300 hover:bg-white/[0.08] hover:border-white/15 hover:shadow-xl;
+    @apply glass transition-all duration-300 hover:bg-card hover:border-primary/20 hover:shadow-md;
   }
 
   .glass-card {
-    @apply glass rounded-xl p-6;
+    @apply bg-card rounded-xl p-6 border border-border shadow-sm;
   }
 
+  /* Gradient texts - using new palette */
   .gradient-text {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400;
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(214, 100%, 40%), hsl(141, 68%, 45%));
   }
 
   .gradient-text-primary {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-indigo-300;
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(214, 100%, 40%), hsl(179, 100%, 35%));
   }
 
+  /* Gradient buttons - Blue to Green */
   .gradient-btn {
-    @apply bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium rounded-lg 
-           transition-all duration-300 hover:from-indigo-500 hover:to-purple-500 
-           hover:shadow-lg hover:shadow-indigo-500/25 hover:-translate-y-0.5
+    @apply text-white font-medium rounded-lg 
+           transition-all duration-300 
+           hover:shadow-lg hover:-translate-y-0.5
            active:translate-y-0;
+    background: linear-gradient(135deg, hsl(214, 100%, 40%), hsl(141, 68%, 45%));
+    box-shadow: 0 4px 14px hsla(214, 100%, 40%, 0.25);
+  }
+  .gradient-btn:hover {
+    background: linear-gradient(135deg, hsl(214, 100%, 45%), hsl(141, 68%, 50%));
+    box-shadow: 0 6px 20px hsla(214, 100%, 40%, 0.35);
   }
 
+  /* CTA button - Gold/Orange */
+  .gradient-btn-cta {
+    @apply text-white font-medium rounded-lg 
+           transition-all duration-300 
+           hover:shadow-lg hover:-translate-y-0.5;
+    background: linear-gradient(135deg, hsl(51, 100%, 50%), hsl(33, 100%, 50%));
+    box-shadow: 0 4px 14px hsla(33, 100%, 50%, 0.25);
+  }
+  .gradient-btn-cta:hover {
+    background: linear-gradient(135deg, hsl(51, 100%, 55%), hsl(33, 100%, 55%));
+  }
+
+  /* Success button - Green */
   .gradient-btn-success {
-    @apply bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-medium rounded-lg
-           transition-all duration-300 hover:from-emerald-500 hover:to-teal-500
-           hover:shadow-lg hover:shadow-emerald-500/25 hover:-translate-y-0.5;
+    @apply text-white font-medium rounded-lg
+           transition-all duration-300 
+           hover:shadow-lg hover:-translate-y-0.5;
+    background: linear-gradient(135deg, hsl(141, 68%, 40%), hsl(179, 100%, 35%));
+    box-shadow: 0 4px 14px hsla(141, 68%, 40%, 0.25);
+  }
+  .gradient-btn-success:hover {
+    background: linear-gradient(135deg, hsl(141, 68%, 45%), hsl(179, 100%, 40%));
   }
 
+  /* Danger button */
   .gradient-btn-danger {
-    @apply bg-gradient-to-r from-red-600 to-rose-600 text-white font-medium rounded-lg
-           transition-all duration-300 hover:from-red-500 hover:to-rose-500
+    @apply bg-gradient-to-r from-red-500 to-rose-500 text-white font-medium rounded-lg
+           transition-all duration-300 hover:from-red-400 hover:to-rose-400
            hover:shadow-lg hover:shadow-red-500/25 hover:-translate-y-0.5;
+  }
+
+  /* Purple-to-Turquoise button */
+  .gradient-btn-tech {
+    @apply text-white font-medium rounded-lg
+           transition-all duration-300 
+           hover:shadow-lg hover:-translate-y-0.5;
+    background: linear-gradient(135deg, hsl(247, 75%, 64%), hsl(179, 100%, 40%));
+    box-shadow: 0 4px 14px hsla(247, 75%, 64%, 0.25);
+  }
+  .gradient-btn-tech:hover {
+    background: linear-gradient(135deg, hsl(247, 75%, 69%), hsl(179, 100%, 45%));
   }
 
   .shimmer {
@@ -119,24 +157,24 @@
   .shimmer::after {
     content: '';
     @apply absolute inset-0;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
     animation: shimmer 2s infinite;
   }
 
   .stat-card {
-    @apply glass-card transition-all duration-500 hover:scale-[1.02] hover:bg-white/[0.08]
-           hover:shadow-xl hover:shadow-indigo-500/5;
+    @apply glass-card transition-all duration-500 hover:scale-[1.02] hover:shadow-lg;
   }
 
+  /* Sidebar menu items - dark sidebar */
   .menu-item {
     @apply flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium
-           transition-all duration-200 text-muted-foreground
-           hover:text-foreground hover:bg-white/[0.06] hover:scale-[1.02]
+           transition-all duration-200 text-sidebar-foreground
+           hover:text-sidebar-accent-foreground hover:bg-sidebar-accent
            active:scale-[0.98];
   }
 
   .menu-item.active {
-    @apply text-primary-foreground bg-primary/20 border-l-2 border-primary;
+    @apply text-sidebar-primary-foreground bg-sidebar-primary/20 border-l-2 border-sidebar-primary;
   }
 
   .floating-label {
@@ -147,27 +185,28 @@
   }
 
   .orb {
-    @apply absolute rounded-full blur-3xl opacity-20 animate-float;
+    @apply absolute rounded-full blur-3xl opacity-15 animate-float;
   }
 
+  /* Badges */
   .badge-success {
     @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-           bg-emerald-500/10 text-emerald-400 border border-emerald-500/20;
+           bg-emerald-50 text-emerald-700 border border-emerald-200;
   }
 
   .badge-warning {
     @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-           bg-amber-500/10 text-amber-400 border border-amber-500/20;
+           bg-amber-50 text-amber-700 border border-amber-200;
   }
 
   .badge-danger {
     @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-           bg-red-500/10 text-red-400 border border-red-500/20;
+           bg-red-50 text-red-700 border border-red-200;
   }
 
   .badge-primary {
     @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-           bg-indigo-500/10 text-indigo-400 border border-indigo-500/20;
+           bg-blue-50 text-blue-700 border border-blue-200;
   }
 }
 
