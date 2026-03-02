@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import Home from "./pages/Home";
+import CollegesExplorer from "./pages/CollegesExplorer";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Scholarships from "./pages/Scholarships";
@@ -26,6 +27,7 @@ const App = () => (
         <AuthProvider>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/colleges" element={<CollegesExplorer />} />
             <Route path="/login" element={<Login />} />
             <Route element={<DashboardLayout />}>
               <Route path="/dashboard" element={<Dashboard />} />
