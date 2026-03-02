@@ -30,6 +30,9 @@ const Home = () => {
             <span className="text-xl font-bold text-white">ScholarConnect</span>
           </div>
           <div className="flex items-center gap-6">
+            <button onClick={() => navigate("/colleges")} className="hidden sm:block text-sm text-white/80 hover:text-white transition-colors">
+              Explore Colleges
+            </button>
             <a href="#features" className="hidden sm:block text-sm text-white/80 hover:text-white transition-colors">
               Features
             </a>
@@ -73,11 +76,11 @@ const Home = () => {
             transition={{ duration: 0.8, delay: 0.6 }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => navigate("/login")}
+            onClick={() => navigate("/colleges")}
             className="mt-10 px-10 py-4 rounded-full font-semibold text-lg flex items-center gap-3 shadow-2xl transition-all text-white"
             style={{ background: 'linear-gradient(135deg, hsl(214,100%,40%), hsl(141,68%,45%))', boxShadow: '0 8px 30px hsla(214,100%,40%,0.35)' }}
           >
-            Let's Go <ArrowRight className="w-5 h-5" />
+            Explore Colleges <ArrowRight className="w-5 h-5" />
           </motion.button>
 
           <motion.p
