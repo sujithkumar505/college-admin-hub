@@ -54,36 +54,43 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     let isMounted = true;
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      async (_event, session) => {
         if (!isMounted) return;
         setSession(session);
         setUser(session?.user ?? null);
 
         if (session?.user) {
-          // Fetch admin profile and college info
           setTimeout(async () => {
             if (!isMounted) return;
-            const { data: profile } = await supabase
-              .from("admin_profiles")
-              .select("*")
-              .eq("user_id", session.user.id)
-              .single();
 
-            if (profile && isMounted) {
-              setAdminProfile({
-                id: profile.id,
-                full_name: profile.full_name,
-                email: profile.email,
-              });
-
-              const { data: collegeData } = await supabase
-                .from("colleges")
+            try {
+              const { data: profile } = await supabase
+                .from("admin_profiles")
                 .select("*")
-                .eq("id", profile.college_id)
+                .eq("user_id", session.user.id)
                 .single();
 
-              if (collegeData && isMounted) {
-                setCollege(collegeData as CollegeInfo);
+              if (profile && isMounted) {
+                setAdminProfile({
+                  id: profile.id,
+                  full_name: profile.full_name,
+                  email: profile.email,
+                });
+
+                const { data: collegeData } = await supabase
+                  .from("colleges")
+                  .select("*")
+                  .eq("id", profile.college_id)
+                  .single();
+
+                if (collegeData && isMounted) {
+                  setCollege(collegeData as CollegeInfo);
+                }
+              }
+            } catch {
+              if (isMounted) {
+                setAdminProfile(null);
+                setCollege(null);
               }
             }
           }, 0);
@@ -94,12 +101,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     );
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!isMounted) return;
-      setSession(session);
-      setUser(session?.user ?? null);
-      setIsLoading(false);
-    });
+    const initSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!isMounted) return;
+        setSession(session);
+        setUser(session?.user ?? null);
+      } catch {
+        if (!isMounted) return;
+        setSession(null);
+        setUser(null);
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    };
+
+    initSession();
 
     return () => {
       isMounted = false;
