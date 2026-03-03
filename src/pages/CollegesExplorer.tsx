@@ -1,535 +1,296 @@
-import { useState, useEffect, useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  GraduationCap, Search, MapPin, Building2, Globe, Calendar,
-  ArrowLeft, ArrowRight, Award, Trophy, Briefcase, BookOpen,
-  IndianRupee, Users, TrendingUp, ChevronDown, ChevronUp,
-  Star, Zap, Plane, Shield, Copy, Check, X
+  ArrowLeft,
+  ArrowRight,
+  Building2,
+  Calendar,
+  Copy,
+  GraduationCap,
+  IndianRupee,
+  MapPin,
+  Search,
+  Sparkles,
+  Check,
 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-interface College {
+interface ScholarshipItem {
+  id: string;
+  name: string;
+  type: "Merit" | "Government" | "Sports" | "Achievement" | "Industry";
+  amount: number;
+  criteria: string;
+  seats: number;
+}
+
+interface CollegeItem {
   id: string;
   name: string;
   code: string;
   location: string;
-  university: string | null;
-  type: string | null;
-  established_year: number | null;
-  website: string | null;
+  established: number;
+  university: string;
+  adminNote: string;
+  scholarships: ScholarshipItem[];
 }
 
-interface Scholarship {
-  id: string;
-  name: string;
-  description: string | null;
-  type: string;
-  amount: number | null;
-  min_cgpa: number | null;
-  max_income: number | null;
-  total_seats: number | null;
-  filled_seats: number | null;
-  status: string | null;
-  college_id: string;
-}
-
-const typeIcon: Record<string, typeof Award> = {
-  "Merit-based": Star,
-  "Government": Shield,
-  "Need-based": Users,
-  "Sports": Trophy,
-};
-
-const typeColor: Record<string, string> = {
-  "Merit-based": "from-blue-500 to-cyan-500",
-  "Government": "from-emerald-500 to-teal-500",
-  "Need-based": "from-amber-500 to-orange-500",
-  "Sports": "from-purple-500 to-pink-500",
-};
+const COLLEGES: CollegeItem[] = [
+  {
+    id: "gmrit",
+    name: "GMR Institute of Technology (GMRIT)",
+    code: "GMRIT-2024",
+    location: "Rajam, Srikakulam",
+    established: 1997,
+    university: "JNTU-GV",
+    adminNote: "Use your registered college-admin email and password after entering this code.",
+    scholarships: [
+      { id: "gm1", name: "Merit Scholarship (CGPA + Attendance)", type: "Merit", amount: 10000, criteria: "CGPA 9.0+ and ~90% attendance", seats: 120 },
+      { id: "gm2", name: "Sports Scholarship", type: "Sports", amount: 8000, criteria: "State/National level sports performers", seats: 25 },
+      { id: "gm3", name: "Special Achievement Award", type: "Achievement", amount: 7000, criteria: "Hackathons, cultural fests, competitions", seats: 40 },
+      { id: "gm4", name: "Premium Paris Internship Exposure", type: "Industry", amount: 150000, criteria: "4th year, 95% score, top recommendations", seats: 5 },
+      { id: "gm5", name: "AP Vidya Deevena", type: "Government", amount: 35000, criteria: "Eligible AP fee reimbursement category", seats: 300 },
+    ],
+  },
+  {
+    id: "vignan",
+    name: "Vignan's Institute of Information Technology",
+    code: "VIGNAN-VZG",
+    location: "Visakhapatnam",
+    established: 2002,
+    university: "JNTU-GV",
+    adminNote: "Use your registered college-admin email and password after entering this code.",
+    scholarships: [
+      { id: "vg1", name: "Academic Topper Award", type: "Merit", amount: 12000, criteria: "CGPA 9.0+", seats: 90 },
+      { id: "vg2", name: "Girls in STEM Scholarship", type: "Achievement", amount: 9000, criteria: "Female students in core branches", seats: 50 },
+      { id: "vg3", name: "Sports Excellence", type: "Sports", amount: 7000, criteria: "University/state medalists", seats: 20 },
+      { id: "vg4", name: "AP Post-Matric (SC/ST)", type: "Government", amount: 30000, criteria: "As per AP social welfare norms", seats: 250 },
+    ],
+  },
+  {
+    id: "srkr",
+    name: "SRKR Engineering College",
+    code: "SRKR-BVR",
+    location: "Bhimavaram",
+    established: 1980,
+    university: "JNTU-K",
+    adminNote: "Use your registered college-admin email and password after entering this code.",
+    scholarships: [
+      { id: "sr1", name: "Merit Fee Concession", type: "Merit", amount: 10000, criteria: "Top 10% branch rank", seats: 100 },
+      { id: "sr2", name: "Innovation Grant", type: "Achievement", amount: 8500, criteria: "Patent/project competition winners", seats: 30 },
+      { id: "sr3", name: "EBC Fee Reimbursement", type: "Government", amount: 25000, criteria: "Eligible EBC families", seats: 220 },
+    ],
+  },
+  {
+    id: "mvgr",
+    name: "MVGR College of Engineering",
+    code: "MVGR-VZN",
+    location: "Vizianagaram",
+    established: 1997,
+    university: "JNTU-GV",
+    adminNote: "Use your registered college-admin email and password after entering this code.",
+    scholarships: [
+      { id: "mv1", name: "MVGR Merit Scholarship", type: "Merit", amount: 11000, criteria: "CGPA 8.8+ with no backlogs", seats: 80 },
+      { id: "mv2", name: "Leadership & Clubs Award", type: "Achievement", amount: 6000, criteria: "Strong performance in campus clubs", seats: 35 },
+      { id: "mv3", name: "AP Vidya Deevena", type: "Government", amount: 35000, criteria: "Eligible AP category", seats: 210 },
+    ],
+  },
+  {
+    id: "vrsec",
+    name: "VR Siddhartha Engineering College",
+    code: "VRSEC-VJA",
+    location: "Vijayawada",
+    established: 1977,
+    university: "JNTU-K",
+    adminNote: "Use your registered college-admin email and password after entering this code.",
+    scholarships: [
+      { id: "vr1", name: "Excellence Scholarship", type: "Merit", amount: 12000, criteria: "Semester topper awards", seats: 85 },
+      { id: "vr2", name: "Industry Internship Fast Track", type: "Industry", amount: 9500, criteria: "High performers through T&P recommendations", seats: 25 },
+      { id: "vr3", name: "AP Post-Matric", type: "Government", amount: 30000, criteria: "As per eligibility", seats: 260 },
+    ],
+  },
+];
 
 const CollegesExplorer = () => {
   const navigate = useNavigate();
-  const [colleges, setColleges] = useState<College[]>([]);
-  const [scholarships, setScholarships] = useState<Scholarship[]>([]);
-  const [search, setSearch] = useState("");
-  const [selectedCollege, setSelectedCollege] = useState<College | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [copiedCode, setCopiedCode] = useState<string | null>(null);
-  const [filterType, setFilterType] = useState<string>("all");
+  const [query, setQuery] = useState("");
+  const [selectedCollegeId, setSelectedCollegeId] = useState<string | null>(null);
+  const [copied, setCopied] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const [{ data: c }, { data: s }] = await Promise.all([
-        supabase.from("colleges").select("*").order("name"),
-        supabase.from("scholarships").select("*").order("amount", { ascending: false }),
-      ]);
-      setColleges((c as College[]) || []);
-      setScholarships((s as Scholarship[]) || []);
-      setLoading(false);
-    };
-    fetchData();
-  }, []);
+  const colleges = COLLEGES;
 
-  const filtered = useMemo(() => {
-    if (!search.trim()) return colleges;
-    const q = search.toLowerCase();
+  const selectedCollege = useMemo(
+    () => colleges.find((college) => college.id === selectedCollegeId) ?? null,
+    [selectedCollegeId, colleges]
+  );
+
+  const filteredColleges = useMemo(() => {
+    if (!query.trim()) return colleges;
+    const q = query.toLowerCase();
     return colleges.filter(
-      (c) =>
-        c.name.toLowerCase().includes(q) ||
-        c.code.toLowerCase().includes(q) ||
-        c.location.toLowerCase().includes(q)
+      (college) =>
+        college.name.toLowerCase().includes(q) ||
+        college.code.toLowerCase().includes(q) ||
+        college.location.toLowerCase().includes(q)
     );
-  }, [colleges, search]);
+  }, [query, colleges]);
 
-  const getCollegeScholarships = (collegeId: string) =>
-    scholarships.filter((s) => s.college_id === collegeId);
+  const analytics = useMemo(() => {
+    const all = colleges.flatMap((c) => c.scholarships);
+    const totalValue = all.reduce((sum, s) => sum + s.amount, 0);
+    const totalSeats = all.reduce((sum, s) => sum + s.seats, 0);
+    const average = all.length ? Math.round(totalValue / all.length) : 0;
+    return { totalPrograms: all.length, totalValue, totalSeats, average };
+  }, [colleges]);
 
-  const getStats = (collegeId: string) => {
-    const cs = getCollegeScholarships(collegeId);
-    const totalAmount = cs.reduce((sum, s) => sum + (s.amount || 0), 0);
-    const totalSeats = cs.reduce((sum, s) => sum + (s.total_seats || 0), 0);
-    return { count: cs.length, totalAmount, totalSeats };
+  const copyText = async (value: string) => {
+    await navigator.clipboard.writeText(value);
+    setCopied(value);
+    setTimeout(() => setCopied(null), 1500);
   };
-
-  const copyCode = (code: string) => {
-    navigator.clipboard.writeText(code);
-    setCopiedCode(code);
-    setTimeout(() => setCopiedCode(null), 2000);
-  };
-
-  const collegeScholarships = selectedCollege
-    ? getCollegeScholarships(selectedCollege.id).filter(
-        (s) => filterType === "all" || s.type === filterType
-      )
-    : [];
-
-  const scholarshipTypes = selectedCollege
-    ? [...new Set(getCollegeScholarships(selectedCollege.id).map((s) => s.type))]
-    : [];
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ repeat: Infinity, duration: 1.2, ease: "linear" }}
-          className="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full"
-        />
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="sticky top-0 z-50 backdrop-blur-xl bg-background/80 border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+      <header className="sticky top-0 z-20 border-b border-border bg-background/95 backdrop-blur">
+        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <button
-              onClick={() => (selectedCollege ? setSelectedCollege(null) : navigate("/"))}
-              className="p-2 rounded-xl hover:bg-muted transition-colors"
+              onClick={() => (selectedCollege ? setSelectedCollegeId(null) : navigate("/"))}
+              className="rounded-lg border border-border bg-card p-2 hover:bg-muted transition-colors"
+              aria-label="Go back"
             >
-              <ArrowLeft className="w-5 h-5 text-foreground" />
+              <ArrowLeft className="h-4 w-4 text-foreground" />
             </button>
-            <div className="flex items-center gap-2">
-              <div
-                className="w-9 h-9 rounded-xl flex items-center justify-center"
-                style={{
-                  background: "linear-gradient(135deg, hsl(214,100%,40%), hsl(141,68%,45%))",
-                }}
-              >
-                <GraduationCap className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h1 className="text-lg font-bold text-foreground leading-tight">
-                  {selectedCollege ? selectedCollege.name : "AP Colleges Explorer"}
-                </h1>
-                <p className="text-xs text-muted-foreground">
-                  {selectedCollege
-                    ? selectedCollege.location
-                    : `${colleges.length} Institutions · Andhra Pradesh`}
-                </p>
-              </div>
+            <div className="h-10 w-10 rounded-xl bg-primary text-primary-foreground flex items-center justify-center">
+              <GraduationCap className="h-5 w-5" />
+            </div>
+            <div>
+              <h1 className="text-lg font-bold text-foreground">{selectedCollege ? selectedCollege.name : "AP Colleges"}</h1>
+              <p className="text-xs text-muted-foreground">{selectedCollege ? selectedCollege.location : "Select a college to view unique code and scholarship analysis"}</p>
             </div>
           </div>
-          {!selectedCollege && (
-            <button
-              onClick={() => navigate("/login")}
-              className="gradient-btn px-4 py-2 text-sm"
-            >
-              Admin Login
-            </button>
-          )}
+          <button onClick={() => navigate("/login")} className="gradient-btn px-4 py-2 text-sm">Admin Login</button>
         </div>
-      </div>
+      </header>
 
       <AnimatePresence mode="wait">
         {!selectedCollege ? (
-          /* ==================== COLLEGE LIST VIEW ==================== */
-          <motion.div
+          <motion.section
             key="list"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0, x: -40 }}
-            className="max-w-7xl mx-auto px-4 sm:px-6 py-8"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="mx-auto max-w-7xl px-4 py-8 sm:px-6"
           >
-            {/* Search */}
-            <div className="relative mb-8 max-w-xl mx-auto">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <div className="relative mb-6 max-w-2xl">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search by name, code, or location..."
-                className="pl-12 h-12 rounded-2xl text-base border-border bg-card shadow-sm focus:shadow-md transition-shadow"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search college by name, code, or location"
+                className="pl-10"
               />
-              {search && (
-                <button
-                  onClick={() => setSearch("")}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              )}
             </div>
 
-            {/* Summary Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
-              {[
-                { label: "Colleges", value: colleges.length, icon: Building2, gradient: "from-blue-500 to-cyan-500" },
-                { label: "Scholarships", value: scholarships.length, icon: Award, gradient: "from-emerald-500 to-teal-500" },
-                { label: "Total Seats", value: scholarships.reduce((s, x) => s + (x.total_seats || 0), 0).toLocaleString(), icon: Users, gradient: "from-amber-500 to-orange-500" },
-                { label: "Max Award", value: `₹${Math.max(...scholarships.map((s) => s.amount || 0)).toLocaleString()}`, icon: IndianRupee, gradient: "from-purple-500 to-pink-500" },
-              ].map((stat) => (
-                <motion.div
-                  key={stat.label}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="glass-card flex items-center gap-3"
-                >
-                  <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${stat.gradient} flex items-center justify-center shrink-0`}>
-                    <stat.icon className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <p className="text-lg font-bold text-foreground">{stat.value}</p>
-                    <p className="text-xs text-muted-foreground">{stat.label}</p>
-                  </div>
-                </motion.div>
-              ))}
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+              <Card><CardContent className="p-4"><p className="text-xs text-muted-foreground">Colleges</p><p className="text-2xl font-bold">{colleges.length}</p></CardContent></Card>
+              <Card><CardContent className="p-4"><p className="text-xs text-muted-foreground">Programs</p><p className="text-2xl font-bold">{analytics.totalPrograms}</p></CardContent></Card>
+              <Card><CardContent className="p-4"><p className="text-xs text-muted-foreground">Total Seats</p><p className="text-2xl font-bold">{analytics.totalSeats}</p></CardContent></Card>
+              <Card><CardContent className="p-4"><p className="text-xs text-muted-foreground">Avg Award</p><p className="text-2xl font-bold">₹{analytics.average.toLocaleString()}</p></CardContent></Card>
             </div>
 
-            {/* College Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filtered.map((college, i) => {
-                const stats = getStats(college.id);
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {filteredColleges.map((college) => {
+                const totalAmount = college.scholarships.reduce((sum, s) => sum + s.amount, 0);
                 return (
-                  <motion.div
-                    key={college.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.05 }}
-                    onClick={() => setSelectedCollege(college)}
-                    className="cursor-pointer group"
-                  >
-                    <Card className="h-full border-border bg-card hover:border-primary/30 hover:shadow-lg transition-all duration-300 overflow-hidden">
-                      {/* Gradient strip */}
-                      <div
-                        className="h-1.5"
-                        style={{
-                          background: "linear-gradient(90deg, hsl(214,100%,40%), hsl(141,68%,45%), hsl(51,100%,50%))",
-                        }}
-                      />
-                      <CardHeader className="pb-3">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1 min-w-0">
-                            <CardTitle className="text-base font-bold text-foreground leading-snug group-hover:text-primary transition-colors">
-                              {college.name}
-                            </CardTitle>
-                            <div className="flex items-center gap-1.5 mt-1.5 text-muted-foreground">
-                              <MapPin className="w-3.5 h-3.5 shrink-0" />
-                              <span className="text-xs truncate">{college.location}</span>
-                            </div>
-                          </div>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              copyCode(college.code);
-                            }}
-                            className="ml-2 px-2.5 py-1.5 rounded-lg bg-muted text-xs font-mono font-bold text-foreground hover:bg-primary/10 hover:text-primary transition-colors flex items-center gap-1.5 shrink-0"
-                          >
-                            {copiedCode === college.code ? (
-                              <Check className="w-3.5 h-3.5 text-emerald-500" />
-                            ) : (
-                              <Copy className="w-3.5 h-3.5" />
-                            )}
-                            {college.code}
-                          </button>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="pt-0">
-                        <div className="flex items-center gap-2 mb-3 flex-wrap">
-                          {college.established_year && (
-                            <Badge variant="secondary" className="text-xs gap-1">
-                              <Calendar className="w-3 h-3" /> Est. {college.established_year}
-                            </Badge>
-                          )}
-                          {college.type && (
-                            <Badge variant="outline" className="text-xs">
-                              {college.type}
-                            </Badge>
-                          )}
-                        </div>
-                        <div className="grid grid-cols-3 gap-2 pt-3 border-t border-border">
-                          <div className="text-center">
-                            <p className="text-lg font-bold text-foreground font-mono">{stats.count}</p>
-                            <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Scholarships</p>
-                          </div>
-                          <div className="text-center border-x border-border">
-                            <p className="text-lg font-bold text-foreground font-mono">{stats.totalSeats.toLocaleString()}</p>
-                            <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Total Seats</p>
-                          </div>
-                          <div className="text-center">
-                            <p className="text-lg font-bold gradient-text font-mono">₹{(stats.totalAmount / 1000).toFixed(0)}K</p>
-                            <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Total Value</p>
-                          </div>
-                        </div>
-                        <div className="mt-3 flex items-center justify-end text-xs text-primary font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                          View Details <ArrowRight className="w-3.5 h-3.5 ml-1" />
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
+                  <Card key={college.id} className="cursor-pointer border-border hover:border-primary/50 transition-colors" onClick={() => setSelectedCollegeId(college.id)}>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-base">{college.name}</CardTitle>
+                      <div className="flex items-center gap-1 text-xs text-muted-foreground"><MapPin className="h-3 w-3" />{college.location}</div>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <Badge variant="secondary" className="font-mono">{college.code}</Badge>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            copyText(college.code);
+                          }}
+                          className="rounded-md border border-border p-1.5 hover:bg-muted"
+                          aria-label="Copy college code"
+                        >
+                          {copied === college.code ? <Check className="h-3.5 w-3.5 text-primary" /> : <Copy className="h-3.5 w-3.5 text-muted-foreground" />}
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 text-xs">
+                        <div className="rounded-md bg-muted p-2"><p className="text-muted-foreground">Programs</p><p className="font-semibold">{college.scholarships.length}</p></div>
+                        <div className="rounded-md bg-muted p-2"><p className="text-muted-foreground">Total Value</p><p className="font-semibold">₹{totalAmount.toLocaleString()}</p></div>
+                      </div>
+                      <div className="text-primary text-xs font-medium flex items-center">View details <ArrowRight className="ml-1 h-3 w-3" /></div>
+                    </CardContent>
+                  </Card>
                 );
               })}
             </div>
-
-            {filtered.length === 0 && (
-              <div className="text-center py-16">
-                <Search className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
-                <p className="text-muted-foreground">No colleges found matching "{search}"</p>
-              </div>
-            )}
-          </motion.div>
+          </motion.section>
         ) : (
-          /* ==================== COLLEGE DETAIL VIEW ==================== */
-          <motion.div
-            key="detail"
-            initial={{ opacity: 0, x: 40 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0 }}
-            className="max-w-7xl mx-auto px-4 sm:px-6 py-8"
+          <motion.section
+            key="details"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="mx-auto max-w-7xl px-4 py-8 sm:px-6"
           >
-            {/* College Hero Card */}
-            <Card className="mb-6 overflow-hidden border-border">
-              <div
-                className="h-2"
-                style={{
-                  background: "linear-gradient(90deg, hsl(214,100%,40%), hsl(141,68%,45%), hsl(51,100%,50%))",
-                }}
-              />
+            <Card className="mb-6">
               <CardContent className="p-6">
-                <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-                  <div className="flex-1">
-                    <h2 className="text-2xl font-extrabold text-foreground mb-1">{selectedCollege.name}</h2>
-                    <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground mb-4">
-                      <span className="flex items-center gap-1"><MapPin className="w-4 h-4" />{selectedCollege.location}</span>
-                      {selectedCollege.established_year && (
-                        <span className="flex items-center gap-1"><Calendar className="w-4 h-4" />Est. {selectedCollege.established_year}</span>
-                      )}
-                      {selectedCollege.university && (
-                        <span className="flex items-center gap-1"><Building2 className="w-4 h-4" />{selectedCollege.university}</span>
-                      )}
-                      {selectedCollege.website && (
-                        <a href={selectedCollege.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-primary hover:underline">
-                          <Globe className="w-4 h-4" />Website
-                        </a>
-                      )}
+                <div className="flex flex-col gap-4 md:flex-row md:justify-between md:items-start">
+                  <div className="space-y-2">
+                    <h2 className="text-2xl font-bold text-foreground">{selectedCollege.name}</h2>
+                    <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
+                      <span className="inline-flex items-center gap-1"><MapPin className="h-4 w-4" />{selectedCollege.location}</span>
+                      <span className="inline-flex items-center gap-1"><Calendar className="h-4 w-4" />Est. {selectedCollege.established}</span>
+                      <span className="inline-flex items-center gap-1"><Building2 className="h-4 w-4" />{selectedCollege.university}</span>
                     </div>
-
-                    {/* Admin Login Code Card */}
-                    <div className="inline-flex items-center gap-3 bg-muted rounded-xl px-4 py-3">
+                    <div className="rounded-xl border border-border bg-muted p-3 inline-flex items-center gap-3">
                       <div>
-                        <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">College Code for Admin Login</p>
-                        <p className="text-xl font-mono font-extrabold text-foreground">{selectedCollege.code}</p>
+                        <p className="text-[11px] uppercase text-muted-foreground">Unique College Code</p>
+                        <p className="font-mono text-xl font-bold">{selectedCollege.code}</p>
                       </div>
-                      <button
-                        onClick={() => copyCode(selectedCollege.code)}
-                        className="p-2 rounded-lg hover:bg-background transition-colors"
-                      >
-                        {copiedCode === selectedCollege.code ? (
-                          <Check className="w-5 h-5 text-emerald-500" />
-                        ) : (
-                          <Copy className="w-5 h-5 text-muted-foreground" />
-                        )}
+                      <button onClick={() => copyText(selectedCollege.code)} className="rounded-md border border-border p-2 hover:bg-background">
+                        {copied === selectedCollege.code ? <Check className="h-4 w-4 text-primary" /> : <Copy className="h-4 w-4 text-muted-foreground" />}
                       </button>
                     </div>
+                    <p className="text-sm text-muted-foreground">{selectedCollege.adminNote}</p>
                   </div>
-
-                  {/* Quick Stats */}
-                  <div className="grid grid-cols-3 gap-3">
-                    {(() => {
-                      const stats = getStats(selectedCollege.id);
-                      return [
-                        { label: "Scholarships", value: stats.count, gradient: "from-blue-500 to-cyan-500" },
-                        { label: "Total Seats", value: stats.totalSeats, gradient: "from-emerald-500 to-teal-500" },
-                        { label: "Total Value", value: `₹${(stats.totalAmount / 1000).toFixed(0)}K`, gradient: "from-amber-500 to-orange-500" },
-                      ].map((s) => (
-                        <div key={s.label} className="text-center p-3 rounded-xl bg-muted/50">
-                          <p className={`text-xl font-extrabold font-mono bg-gradient-to-r ${s.gradient} bg-clip-text text-transparent`}>{s.value}</p>
-                          <p className="text-[10px] text-muted-foreground uppercase tracking-wide">{s.label}</p>
-                        </div>
-                      ));
-                    })()}
+                  <div className="rounded-xl bg-primary/10 px-4 py-3 text-sm text-primary inline-flex items-center gap-2 h-fit">
+                    <Sparkles className="h-4 w-4" />
+                    Scholarship analysis ready
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Filter Tabs */}
-            <div className="flex items-center gap-2 mb-6 flex-wrap">
-              <button
-                onClick={() => setFilterType("all")}
-                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-                  filterType === "all"
-                    ? "bg-foreground text-background shadow-md"
-                    : "bg-muted text-muted-foreground hover:bg-muted/80"
-                }`}
-              >
-                All ({getCollegeScholarships(selectedCollege.id).length})
-              </button>
-              {scholarshipTypes.map((type) => {
-                const Icon = typeIcon[type] || Award;
-                const count = getCollegeScholarships(selectedCollege.id).filter((s) => s.type === type).length;
-                return (
-                  <button
-                    key={type}
-                    onClick={() => setFilterType(type)}
-                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-1.5 ${
-                      filterType === type
-                        ? "bg-foreground text-background shadow-md"
-                        : "bg-muted text-muted-foreground hover:bg-muted/80"
-                    }`}
-                  >
-                    <Icon className="w-3.5 h-3.5" />
-                    {type} ({count})
-                  </button>
-                );
-              })}
+            <div className="grid gap-4 md:grid-cols-2">
+              {selectedCollege.scholarships.map((item) => (
+                <Card key={item.id} className="border-border">
+                  <CardContent className="p-4 space-y-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <h3 className="font-semibold text-foreground">{item.name}</h3>
+                      <Badge variant="outline">{item.type}</Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground">{item.criteria}</p>
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <div className="rounded-md bg-muted p-2 inline-flex items-center gap-1"><IndianRupee className="h-4 w-4" />₹{item.amount.toLocaleString()}</div>
+                      <div className="rounded-md bg-muted p-2">Seats: {item.seats}</div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
-
-            {/* Scholarships Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {collegeScholarships.map((scholarship, i) => {
-                const Icon = typeIcon[scholarship.type] || Award;
-                const gradient = typeColor[scholarship.type] || "from-gray-500 to-gray-600";
-                const fillPercent = scholarship.total_seats
-                  ? Math.round(((scholarship.filled_seats || 0) / scholarship.total_seats) * 100)
-                  : 0;
-
-                return (
-                  <motion.div
-                    key={scholarship.id}
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.04 }}
-                  >
-                    <Card className="border-border hover:border-primary/20 hover:shadow-md transition-all duration-300 h-full">
-                      <CardContent className="p-5">
-                        <div className="flex items-start gap-3 mb-3">
-                          <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center shrink-0`}>
-                            <Icon className="w-5 h-5 text-white" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <h3 className="font-bold text-foreground text-sm leading-snug">{scholarship.name}</h3>
-                            <Badge variant="outline" className="text-[10px] mt-1">{scholarship.type}</Badge>
-                          </div>
-                          {scholarship.amount ? (
-                            <div className="text-right shrink-0">
-                              <p className="text-lg font-extrabold font-mono gradient-text">
-                                ₹{scholarship.amount.toLocaleString()}
-                              </p>
-                              <p className="text-[10px] text-muted-foreground">per year</p>
-                            </div>
-                          ) : (
-                            <Badge className="bg-primary/10 text-primary border-0 text-xs shrink-0">
-                              <Briefcase className="w-3 h-3 mr-1" /> Opportunity
-                            </Badge>
-                          )}
-                        </div>
-
-                        {scholarship.description && (
-                          <p className="text-xs text-muted-foreground mb-3 leading-relaxed">{scholarship.description}</p>
-                        )}
-
-                        <div className="flex flex-wrap gap-2 mb-3">
-                          {scholarship.min_cgpa && (
-                            <span className="inline-flex items-center gap-1 text-[11px] bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded-full font-medium">
-                              <TrendingUp className="w-3 h-3" /> Min CGPA: {scholarship.min_cgpa}
-                            </span>
-                          )}
-                          {scholarship.max_income && (
-                            <span className="inline-flex items-center gap-1 text-[11px] bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-full font-medium">
-                              <IndianRupee className="w-3 h-3" /> Max Income: ₹{(scholarship.max_income / 1000).toFixed(0)}K
-                            </span>
-                          )}
-                        </div>
-
-                        {scholarship.total_seats ? (
-                          <div>
-                            <div className="flex items-center justify-between text-[11px] text-muted-foreground mb-1">
-                              <span>{scholarship.filled_seats || 0} / {scholarship.total_seats} seats filled</span>
-                              <span className="font-mono font-bold">{fillPercent}%</span>
-                            </div>
-                            <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                              <motion.div
-                                initial={{ width: 0 }}
-                                animate={{ width: `${fillPercent}%` }}
-                                transition={{ duration: 0.8, delay: i * 0.05 }}
-                                className={`h-full rounded-full bg-gradient-to-r ${gradient}`}
-                              />
-                            </div>
-                          </div>
-                        ) : null}
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                );
-              })}
-            </div>
-
-            {collegeScholarships.length === 0 && (
-              <div className="text-center py-12">
-                <Award className="w-10 h-10 text-muted-foreground/30 mx-auto mb-2" />
-                <p className="text-muted-foreground">No scholarships found for this filter.</p>
-              </div>
-            )}
-
-            {/* Admin Login CTA */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="mt-10 text-center"
-            >
-              <Card className="inline-block border-primary/20 bg-primary/5">
-                <CardContent className="p-6 flex flex-col sm:flex-row items-center gap-4">
-                  <div className="text-left">
-                    <h3 className="font-bold text-foreground">Are you the admin of {selectedCollege.name}?</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Use code <span className="font-mono font-bold text-primary">{selectedCollege.code}</span> to login and manage scholarships.
-                    </p>
-                  </div>
-                  <button onClick={() => navigate("/login")} className="gradient-btn px-6 py-2.5 text-sm whitespace-nowrap">
-                    Admin Login <ArrowRight className="w-4 h-4 inline ml-1" />
-                  </button>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </motion.div>
+          </motion.section>
         )}
       </AnimatePresence>
     </div>
